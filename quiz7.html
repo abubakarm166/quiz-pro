@@ -350,7 +350,7 @@
           <label class="quiz-switcher" for="quiz-nav-select">
             <span>Go to quiz:</span>
             <select id="quiz-nav-select" aria-label="Select quiz page">
-              <option value="quiz1.html">GK Test 1</option>
+              <option value="index.html">GK Test 1</option>
               <option value="quiz2.html">GK Test 2</option>
               <option value="quiz3.html">GK Test 3</option>
               <option value="quiz4.html">GK Test 4</option>
@@ -1901,7 +1901,7 @@
           const quizNavSelect = document.getElementById("quiz-nav-select");
 
           if (quizNavSelect) {
-            const currentPage = window.location.pathname.split("/").pop() || "quiz1.html";
+            const currentPage = window.location.pathname.split("/").pop() || "index.html";
             quizNavSelect.value = currentPage;
             quizNavSelect.addEventListener("change", () => {
               const target = quizNavSelect.value;
