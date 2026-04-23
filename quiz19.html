@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GK Test 19 – Standalone Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #ae54af;
+      --primary-dark: #8b3a8d;
+      --bg: #f5f5fa;
+      --card-bg: #ffffff;
+      --text: #222222;
+      --muted: #777777;
+      --correct: #27ae60;
+      --wrong: #e74c3c;
+      --border: #dddddd;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top left, #f8e8ff, #f5f5fa 45%, #eef3ff);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 24px auto 48px;
+      padding: 0 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 2.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #222;
+    }
+
+    header p {
+      margin: 4px 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      justify-content: center;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .meta span {
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .quiz-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(15, 10, 46, 0.12);
+      padding: 20px 20px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .quiz-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .quiz-controls-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .quiz-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    .quiz-switcher select {
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: #fff;
+      color: #222;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .quiz-switcher select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(174, 84, 175, 0.15);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 10px 25px rgba(174, 84, 175, 0.35);
+      transition: background 0.15s ease, transform 0.15s ease,
+        box-shadow 0.15s ease;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(174, 84, 175, 0.45);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 16px rgba(174, 84, 175, 0.3);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid rgba(174, 84, 175, 0.4);
+      box-shadow: none;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(174, 84, 175, 0.06);
+      box-shadow: none;
+    }
+
+    .questions-grid {
+      margin-top: 10px;
+    }
+
+    .question {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 14px 14px 10px;
+      margin-bottom: 12px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.95),
+        rgba(250, 248, 255, 1)
+      );
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .question-number {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--primary-dark);
+    }
+
+    .question-text {
+      margin: 0;
+      font-size: 0.98rem;
+      color: #222;
+    }
+
+    .options {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 4px;
+    }
+
+    .option {
+      padding: 6px 9px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      font-size: 0.94rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px dashed transparent;
+    }
+
+    .option.correct,
+    .option.wrong {
+      background: transparent;
+      border-color: transparent;
+      color: #444;
+    }
+
+    .quiz-reviewed .option.correct {
+      background: rgba(39, 174, 96, 0.06);
+      border-color: rgba(39, 174, 96, 0.45);
+      color: #145c32;
+    }
+
+    .quiz-reviewed .option.wrong {
+      background: rgba(231, 76, 60, 0.025);
+      border-color: rgba(0, 0, 0, 0.02);
+      color: #444;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .badge.correct {
+      border-color: var(--correct);
+      color: var(--correct);
+      background: rgba(39, 174, 96, 0.06);
+    }
+
+    .badge.wrong {
+      border-color: var(--wrong);
+      color: var(--wrong);
+      background: rgba(231, 76, 60, 0.04);
+    }
+
+    .option-label {
+      font-weight: 500;
+      width: 22px;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.55);
+      flex-shrink: 0;
+    }
+
+    .option-text {
+      flex: 1;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .result-bar {
+      margin-top: 18px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      background: rgba(174, 84, 175, 0.06);
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .result-bar strong {
+      color: var(--primary-dark);
+    }
+
+    .question.unanswered {
+      box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.25);
+    }
+
+    .option.selected {
+      box-shadow: 0 0 0 1px rgba(174, 84, 175, 0.6);
+      background: rgba(174, 84, 175, 0.07);
+    }
+
+    @media (max-width: 640px) {
+      .quiz-card {
+        padding: 16px 14px 20px;
+      }
+
+      header h1 {
+        font-size: 1.7rem;
+      }
+
+      .quiz-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .quiz-controls-right {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .btn,
+      .btn-ghost {
+        justify-content: center;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>GK Test 19</h1>
+      <p>Standalone version of the quiz without password or external plugins.</p>
+      <div class="meta">
+        <span>50 MCQs</span>
+        <span>General Knowledge</span>
+        <span>Pakistan &amp; World GK</span>
+      </div>
+    </header>
+
+    <main class="quiz-card">
+      <div class="quiz-controls">
+        <div class="quiz-controls-left">
+          <span class="pill">Select answers, then check your score</span>
+          <label class="quiz-switcher" for="quiz-nav-select">
+            <span>Go to quiz:</span>
+            <select id="quiz-nav-select" aria-label="Select quiz page">
+              <option value="quiz1.html">GK Test 1</option>
+              <option value="quiz2.html">GK Test 2</option>
+              <option value="quiz3.html">GK Test 3</option>
+              <option value="quiz4.html">GK Test 4</option>
+              <option value="quiz5.html">GK Test 5</option>
+              <option value="quiz6.html">GK Test 6</option>
+              <option value="quiz7.html">GK Test 7</option>
+              <option value="quiz8.html">GK Test 8</option>
+              <option value="quiz9.html">GK Test 9</option>
+              <option value="quiz10.html">GK Test 10</option>
+              <option value="quiz11.html">GK Test 11</option>
+              <option value="quiz12.html">GK Test 12</option>
+              <option value="quiz13.html">GK Test 13</option>
+              <option value="quiz14.html">GK Test 14</option>
+              <option value="quiz15.html">GK Test 15</option>
+              <option value="quiz16.html">GK Test 16</option>
+              <option value="quiz17.html">GK Test 17</option>
+              <option value="quiz18.html">GK Test 18</option>
+              <option value="quiz19.html">GK Test 19</option>
+            </select>
+          </label>
+        </div>
+        <div class="quiz-controls-right">
+          <button class="btn" type="button" id="check-score-btn">
+            ✅ Check score
+          </button>
+          <button class="btn-ghost btn" type="button" onclick="window.print()">
+            🖨️ Print quiz
+          </button>
+        </div>
+      </div>
+
+      <div class="questions-grid">
+        <!-- Question 1 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">1.</span>
+            <p class="question-text">Foster Mother Of Prophet Muhammad Saw?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">Hazrat Halima Saadia</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Hazrat Safiya</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Hazrat Amina</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Hazrat Khansa</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 2 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">2.</span>
+            <p class="question-text">Pakistan Biggest Source Of Electricity Production Is?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Nuclear</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Hydroelectric</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Solar</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">Natural Gas</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 3 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">3.</span>
+            <p class="question-text">When did the USA invade Afghanistan?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">2001</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">2003</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">1999</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">2010</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 4 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">4.</span>
+            <p class="question-text">Kargill War Was Fought In Which Year?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">1984</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">1995</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">C</span>
+              <span class="option-text">1999</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">2001</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 5 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">5.</span>
+            <p class="question-text">When did Operation Radd-ul-Fasaad start?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">2017</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">2014</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">2015</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">2019</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 6 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">6.</span>
+            <p class="question-text">He Is Superior..... Me?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">of</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">on</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">at</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">to</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 7 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">7.</span>
+            <p class="question-text">Asad Is Swimming...... One Hour?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">for</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">at</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">since</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">on</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 8 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">8.</span>
+            <p class="question-text">Pakistan Steel Mills was made with the help of?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Germany</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">USA</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">C</span>
+              <span class="option-text">Soviet Union</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">China</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 9 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">9.</span>
+            <p class="question-text">Usman is afraid ______ dogs?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">by</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">with</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">C</span>
+              <span class="option-text">of</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">for</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 10 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">10.</span>
+            <p class="question-text">Pakistan's Plans To Send Its First Astronaut Into Space By?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">2030</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">2025</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">2020</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">2022</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 11 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">11.</span>
+            <p class="question-text">Who sold Kashmir to Gulab Singh?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">British Government</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Mughal Empire</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Ranjit Singh</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Maharaja Hari Singh</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 12 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">12.</span>
+            <p class="question-text">2+2/2?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">3</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">4</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">1</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">2</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 13 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">13.</span>
+            <p class="question-text">When Queen Elizabeth Tour Pakistan?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">1960 and 1972</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">1961 and 1997</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">1965 and 1990</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">1958 and 1992</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 14 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">14.</span>
+            <p class="question-text">I was amazed ____ his misbehavior?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">at</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">with</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">from</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">on</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 15 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">15.</span>
+            <p class="question-text">One third of one tenth of 90 is?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">30</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">1</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">9</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">3</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 16 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">16.</span>
+            <p class="question-text">A linear equation has how many roots?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">1</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">3</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Infinite</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">2</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 17 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">17.</span>
+            <p class="question-text">Sindh Was Conquered By?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Babur</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">Muhammad Bin Qasim</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Sher Shah Suri</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Sultan Mahmud Ghaznavi</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 18 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">18.</span>
+            <p class="question-text">What was the name of Hazrat Zakariya (A.S)'s son?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">Hazrat Yahya (A.S)</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Hazrat Isa (A.S)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Hazrat Idris (A.S)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Hazrat Haroon (A.S)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 19 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">19.</span>
+            <p class="question-text">Congress Was Established In Which Year?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">1870</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">1885</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">1881</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">1905</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 20 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">20.</span>
+            <p class="question-text">Warsak Dam Built In Which River?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Jhelum River</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Indus River</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">C</span>
+              <span class="option-text">Kabul River</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Swat River</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 21 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">21.</span>
+            <p class="question-text">First Khalifa Of Islam?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Hazrat Usman (RA)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">Hazrat Abu Bakr (RA)</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Hazrat Ali (RA)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Hazrat Umar (RA)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 22 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">22.</span>
+            <p class="question-text">Hazrat Ismail (A.S) was the son of?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Hazrat Adam (A.S)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">Hazrat Ibrahim (A.S)</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Hazrat Nuh (A.S)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Hazrat Musa (A.S)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 23 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">23.</span>
+            <p class="question-text">Quarter Of One Tenth Of 120?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">3</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">6</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">2</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">4</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 24 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">24.</span>
+            <p class="question-text">What was the objective of Operation Zarb-e-Azb?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Stop floods</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Border trade</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Catch smugglers</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">Counter terrorism</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 25 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">25.</span>
+            <p class="question-text">Battle Of Panipat?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">1601</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">1526</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">1575</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">1506</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 26 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">26.</span>
+            <p class="question-text">Manchar Lake is located in?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">Sindh</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">KPK</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Punjab</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Balochistan</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 27 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">27.</span>
+            <p class="question-text">When did Pakistan become a member of the UNO?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">30 September 1947</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">14 August 1947</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">26 October 1947</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">1 January 1948</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 28 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">28.</span>
+            <p class="question-text">I Am Going....Home?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">at</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">in</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">on</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">None</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 29 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">29.</span>
+            <p class="question-text">In which city was the Indian National Congress formed?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Madras</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Calcutta</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">C</span>
+              <span class="option-text">Bombay</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Delhi</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 30 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">30.</span>
+            <p class="question-text">Who was the first President of India?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">Dr. Rajendra Prasad</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Jawaharlal Nehru</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Mahatma Gandhi</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Sarvepalli Radhakrishnan</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 31 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">31.</span>
+            <p class="question-text">The Leader Of Muslims In Ghzwa Tabook Was?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Hazrat Abu Bakr (RA)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Hazrat Umar (RA)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Hazrat Ali (RA)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">Hazrat Muhammad Saw</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 32 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">32.</span>
+            <p class="question-text">Holy Prophet 1st Wife?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">Hazrat Khadija (RA)</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Hazrat Fatima (RA)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Hazrat Aisha (RA)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Hazrat Safiya (RA)</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 33 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">33.</span>
+            <p class="question-text">“Throw the pen ___ the dustbin.”</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">in</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">with</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">C</span>
+              <span class="option-text">into</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">at</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 34 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">34.</span>
+            <p class="question-text">Theory Of Relativity Was Given By?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Isaac Newton</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Galileo Galilei</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Stephen Hawking</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">Albert Einstein</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 35 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">35.</span>
+            <p class="question-text">Neelum River Is In Which District Of Pakistan?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Mansehra</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Gilgit</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">C</span>
+              <span class="option-text">Azad Kashmir</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Swat</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 36 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">36.</span>
+            <p class="question-text">Loc Stands For?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Line of Community</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">Line of Control</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Line of Combat</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Line of Communication</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 37 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">37.</span>
+            <p class="question-text">Telescope Was Discovered By ?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Johannes Kepler</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Copernicus</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Isaac Newton</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">Galileo Galilei</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 38 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">38.</span>
+            <p class="question-text">Kashmir Highway Is Renamed As?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Jinnah Highway</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">Srinagar Highway</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Muzaffarabad Highway</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Gilgit Highway</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 39 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">39.</span>
+            <p class="question-text">She is jealous ______ my friend?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">by</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">of</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">from</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">on</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 40 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">40.</span>
+            <p class="question-text">The Indus Water Treaty was signed in?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">1985</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">1960</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">1955</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">1971</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 41 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">41.</span>
+            <p class="question-text">Why We Boil Milk?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">To kill germs</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">To freeze it</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">To make it sweet</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">To remove fat</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 42 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">42.</span>
+            <p class="question-text">When did Pakistan introduce its first postal stamp?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">1960</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">1956</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">1947</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">1948</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 43 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">43.</span>
+            <p class="question-text">Which country has no army?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">Iceland</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Syria</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Iran</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Turkey</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 44 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">44.</span>
+            <p class="question-text">He is responsible ____ his decision??</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">on</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">about</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">of</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">for</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 45 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">45.</span>
+            <p class="question-text">The 1962 Constitution of Pakistan was of which type?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">Democratic</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Parliamentary</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Mixed</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">Presidential</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 46 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">46.</span>
+            <p class="question-text">What is the name of Pakistan’s lower house?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">National Assembly</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Parliament</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Assembly</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Senate</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 47 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">47.</span>
+            <p class="question-text">He is good ______ football?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">by</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">from</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">on</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">at</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 48 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">48.</span>
+            <p class="question-text">Montey Morley Reforms?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">1905</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">1919</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">1911</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">D</span>
+              <span class="option-text">1909</span>
+              <span class="badge correct">Correct</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 49 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">49.</span>
+            <p class="question-text">What is the approximate length of the Amazon River?</p>
+          </div>
+          <ul class="options">
+            <li class="option wrong">
+              <span class="option-label">A</span>
+              <span class="option-text">5,800 km</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option correct">
+              <span class="option-label">B</span>
+              <span class="option-text">6,400 km</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">3,200 km</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">6,000 km</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Question 50 -->
+        <section class="question">
+          <div class="question-header">
+            <span class="question-number">50.</span>
+            <p class="question-text">Where did the boat of Hazrat Nooh (A.S) stop?</p>
+          </div>
+          <ul class="options">
+            <li class="option correct">
+              <span class="option-label">A</span>
+              <span class="option-text">Mount Judi</span>
+              <span class="badge correct">Correct</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">B</span>
+              <span class="option-text">Mount Uhud</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">C</span>
+              <span class="option-text">Mount Safa</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+            <li class="option wrong">
+              <span class="option-label">D</span>
+              <span class="option-text">Mount Arafat</span>
+              <span class="badge wrong">Wrong</span>
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      <p class="footer-note">
+        This page is a clean standalone version of the original online quiz.
+        It contains all questions and answer options without any passwords or external dependencies.
+      </p>
+
+      <script>
+        (function () {
+          const quizCard = document.querySelector(".quiz-card");
+          const questions = Array.from(document.querySelectorAll(".question"));
+          const resultBar = document.getElementById("result-bar");
+          const checkBtn = document.getElementById("check-score-btn");
+          const quizNavSelect = document.getElementById("quiz-nav-select");
+
+          if (quizNavSelect) {
+            const currentPage = window.location.pathname.split("/").pop() || "quiz1.html";
+            quizNavSelect.value = currentPage;
+            quizNavSelect.addEventListener("change", () => {
+              const target = quizNavSelect.value;
+              if (target && target !== currentPage) {
+                window.location.href = target;
+              }
+            });
+          }
+
+          // Add helpers and click handlers to options
+          questions.forEach((q) => {
+            const options = Array.from(q.querySelectorAll(".option"));
+            options.forEach((opt) => {
+              const isCorrect = opt.classList.contains("correct");
+              opt.dataset.correct = isCorrect ? "true" : "false";
+
+              // Hide badges until user checks score
+              const badge = opt.querySelector(".badge");
+              if (badge) {
+                badge.style.visibility = "hidden";
+              }
+
+              opt.style.cursor = "pointer";
+              opt.addEventListener("click", () => {
+                options.forEach((o) => o.classList.remove("selected"));
+                opt.classList.add("selected");
+                q.classList.remove("unanswered");
+              });
+            });
+          });
+
+          function evaluateQuiz() {
+            const total = questions.length;
+            let correct = 0;
+            let unanswered = 0;
+
+            questions.forEach((q) => {
+              const options = Array.from(q.querySelectorAll(".option"));
+              const selected = options.find((o) =>
+                o.classList.contains("selected")
+              );
+
+              if (!selected) {
+                unanswered++;
+                q.classList.add("unanswered");
+              } else {
+                q.classList.remove("unanswered");
+              }
+
+              // Reveal badges and always highlight correct options
+              options.forEach((o) => {
+                const badge = o.querySelector(".badge");
+                if (badge) {
+                  badge.style.visibility = "visible";
+                }
+              });
+
+              if (selected && selected.dataset.correct === "true") {
+                correct++;
+              }
+            });
+
+            const percent = Math.round((correct / total) * 100);
+            let msg =
+              "You got <strong>" +
+              correct +
+              "</strong> out of <strong>" +
+              total +
+              "</strong> questions correct (" +
+              percent +
+              "%).";
+            if (unanswered > 0) {
+              msg +=
+                " " +
+                unanswered +
+                " question(s) are still unanswered (highlighted).";
+            }
+
+            resultBar.innerHTML = msg;
+            resultBar.style.display = "block";
+            if (quizCard) {
+              quizCard.classList.add("quiz-reviewed");
+            }
+          }
+
+          if (checkBtn) {
+            checkBtn.addEventListener("click", evaluateQuiz);
+          }
+        })();
+      </script>
+    </main>
+  </div>
+</body>
+</html>
+
